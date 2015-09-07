@@ -1,9 +1,12 @@
 function movement( robot )
-%MOVEMENT Summary of this function goes here
-%   Detailed explanation goes here
+
+% Given the specific robot, the robot is able to move forward for 20cm
+% pause for 2 seconds and move back for 20 cm
+% Afterwards, matlab plots the actual distance traveled.  
+
 sp_left = robot.encoders.LatestMessage.Left;
 sp_right = robot.encoders.LatestMessage.Right;
-origin = sp_left;
+origin = sp_left; %define origin for graph purpose.
 c_left = sp_left;
 c_right = sp_right;
 timearray=[];
