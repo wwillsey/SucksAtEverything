@@ -15,9 +15,10 @@ while (c_left - sp_left) < 200 || (c_right - sp_right) < 200
     timearray(accum) = toc;
     distarray(accum) = c_left-sp_left;
     accum = accum+1;
+    pause(0.01);
     c_left=robot.encoders.LatestMessage.Left;
     c_right=robot.encoders.LatestMessage.Right;
-    pause(0.001);
+
 end
 robot.sendVelocity(0,0);
 s_begin = toc;
@@ -27,8 +28,7 @@ while (s_now-s_begin) < 2
     pause(0.001);
     s_now = toc;
     timearray(accum) = s_now;
-    distarray(accum) = robot.encoders.LatestMessage.Left-origin;
-    accum = accum+1;
+    dis
 end
 
 sp_left = robot.encoders.LatestMessage.Left;
@@ -37,12 +37,9 @@ c_left = sp_left;
 c_right = sp_right;
 while (c_left - sp_left) > -200 || (c_right - sp_right) > -200
     robot.sendVelocity(-0.05, -0.05);
-    timearray(accum) = toc;
-    distarray(accum) = c_left - origin;
-    accum = accum+1;
+    pause(0.01);
     c_left=robot.encoders.LatestMessage.Left;
     c_right=robot.encoders.LatestMessage.Right;
-    pause(0.001);
 end
 robot.sendVelocity(0,0);
 
