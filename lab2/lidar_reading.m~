@@ -4,7 +4,7 @@ function  lidar_reading(msg)
 maxObjectRange = 1.5;
 maxBearing = pi/2;
 lidar_read = msg.Ranges;
-if(ishandle(1))
+if(ishandle())
     clf(1);
 end
 axis([0,2, -1, 1]);
@@ -15,5 +15,4 @@ for j = 1:360
     hold on;
     plot(x,y, '*');
    end
-   
 end
