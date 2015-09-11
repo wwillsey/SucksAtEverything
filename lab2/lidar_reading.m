@@ -1,4 +1,4 @@
-function [res] =  lidar_reading(msg)
+function res =  lidar_reading(msg)
 % given a robot that has the lidar started, it reads the lidar reading and
 % plot the data.
 maxObjectRange = 1.5;
@@ -8,6 +8,7 @@ if(ishandle(1))
     clf(1);
 end
 axis([0,2, -1, 1]);
+res = [1,0,0];
 for j = 1:360
    r = lidar_read(j);
    [x,y,b] = irToXy(j, r);
