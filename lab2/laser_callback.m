@@ -1,4 +1,4 @@
-function  callback( src, msg )
+function  laser_callback( src, msg )
 %CALLBACK Summary of this function goes here
 %   Detailed explanation goes here
 lidar_reading(msg);
