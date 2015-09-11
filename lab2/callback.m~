@@ -1,9 +1,0 @@
-function [ output_args ] = callback( src, msg )
-%CALLBACK Summary of this function goes here
-%   Detailed explanation goes here
-fig = figure;
-lidar_reading(msg);
-pause(0.001);
-
-end
-
