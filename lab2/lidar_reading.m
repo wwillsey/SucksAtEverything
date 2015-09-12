@@ -11,27 +11,22 @@ if(ishandle(1))
 else
     figure(1);
 end
-<<<<<<< HEAD
+
 axis([-2, 2, -2, 2]);
 nearest_obj = [1,0,0];
-=======
-axis([-1, 1, 0, 2]);
-res = [1,0,0];
->>>>>>> 49c677aaefb08efa9c28dd0cc49a20d44964dbbd
+
+
 for j = 1:360
    r = lidar_read(j);
    [x,y,b] = irToXy(j, r);
    if(r > minObjectRange & r < maxObjectRange & abs(b) < maxBearing) 
     hold on;
-<<<<<<< HEAD
+
     plot(x,y, '*');
     if(r < nearest_range(2))
         nearest_range = [j,r];
     end
-=======
-    plot(-y,x, '*');
-    res = [x,y,b];
->>>>>>> 49c677aaefb08efa9c28dd0cc49a20d44964dbbd
+
    end
 end
 pause(0.005);
