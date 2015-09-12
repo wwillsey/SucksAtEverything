@@ -1,0 +1,6 @@
+% Node = robotics.ros.Node('nxt_velocity');
+robot.startLaser();
+global publish;
+publish = rospublisher('/nxt_velocity', rostype.);
+pause(3);
+laserScan = rossubscriber('/scan', @laser_callback);
