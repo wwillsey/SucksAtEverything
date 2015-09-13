@@ -2,7 +2,7 @@ function nearest_obj =  lidar_reading(msg)
 % given a robot that has the lidar started, it reads the lidar reading and
 % plot the data.
 maxObjectRange = 1.5;
-minObjectRange = 0.006;
+minObjectRange = 0.06;
 maxBearing = pi/2;
 lidar_read = msg.Ranges;
 nearest_range = [0,2];
