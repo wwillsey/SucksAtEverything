@@ -1,4 +1,4 @@
-function [ output_args ] = velocity_to_robot( nearest_obj )
+function [ vl, vr ] = velocity_to_robot( nearest_obj )
 %VELOCITY_TO_ROBOT Summary of this function goes here
 %   Detailed explanation goes here
 x = nearest_obj(1);
@@ -13,10 +13,10 @@ if( x > 1.5 || x < 0.006)
     disp('Detected Distance is abnormal!!!!');
 end
 if( x > 1.05)
-    vl = max(x - 1, 0.15); 
+    vl = min(x - 1, 0.15); 
     vr = vl;
 elseif (x < 0.95)
-    vl = min(x - 1, -0.15);
+    vl = max(x - 1, -0.15);
     vr = vl;
 else
     vl = 0;
