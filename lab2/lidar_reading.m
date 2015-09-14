@@ -5,7 +5,7 @@ maxObjectRange = 1.5;
 minObjectRange = 0.06;
 maxBearing = pi/2;
 lidar_read = msg.Ranges;
-nearest_range = [0,2];
+nearest_range = [0,4];
 if(ishandle(1))
     clf(1);
 else
@@ -18,8 +18,8 @@ for j = 1:360
    r = lidar_read(j);
    [x,y,b] = irToXy(j, r);
    if(r > minObjectRange & r < maxObjectRange & abs(b) < maxBearing) 
-%     hold on;
-%     plot(x,y, '*');
+    %hold on;
+    %plot(x,y, '*');
     if(r < nearest_range(2))
         nearest_range = [j,r];
         
@@ -27,10 +27,12 @@ for j = 1:360
 
    end
 end
-
+pause(.005);
 [tx,ty,tb]=irToXy(nearest_range(1), nearest_range(2));
 hold on;
 figure(1);
 plot(tx, ty, '*');
 pause(0.005);
-nearest_obj = [tx,ty,tb];
+if nearest_range(2) < 1.5
+    nearest_obj = [tx,ty,tb];
+end

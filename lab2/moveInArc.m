@@ -17,7 +17,7 @@ else
     end
 end
 
-% 
+
 if max(abs(vl),abs(vr)) >= 0.25
     vl = (vl / max(abs(vl),abs(vr))) * 0.25;
     vr = (vr / max(abs(vl),abs(vr))) * 0.25;
