@@ -5,7 +5,7 @@ function [ vl, vr ] = velocity_to_robot( nearest_obj )
 x = nearest_obj(1);
 y = nearest_obj(2);
 d = sqrt(x^2+y^2);
-vel = (d - 1);
+vel = (d - 1)*;
 if abs(vel) < .03
     vel = 0;
 end

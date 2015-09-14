@@ -1,6 +1,5 @@
 function [ vl, vr ] = moveInArc(x,y,v)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+% Finding the trajectory
 
 if abs(y) < .01
     vr = v;
@@ -17,13 +16,15 @@ else
         vl = tmp;
     end
 end
+
+% 
 if max(abs(vl),abs(vr)) >= 0.25
     vl = (vl / max(abs(vl),abs(vr))) * 0.25;
     vr = (vr / max(abs(vl),abs(vr))) * 0.25;
 end
 if min(abs(vl),abs(vr)) <= 0.03
-    vl = (vl / min(abs(vl),abs(vr))) * 0.03;
-    vr = (vr / min(abs(vl),abs(vr))) * 0.03;
+    vl = (vl / min(abs(vl),abs(vr))) * 0.05;
+    vr = (vr / min(abs(vl),abs(vr))) * 0.05;
 end
 end
 
