@@ -1,5 +1,5 @@
 tic;
-ks = 0.5;
+ks = 0.7;
 kv = 0.4;
 tf = 12.565*ks/kv;
 t = toc;
