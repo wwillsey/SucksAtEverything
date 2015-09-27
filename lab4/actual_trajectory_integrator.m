@@ -8,7 +8,6 @@ current_enc = double(handle.LatestMessage.Left) / 1e3;
 el_n = current_enc - enc_init;
 
 if(t_accum <= 5)
-    X = 
     set(my_plot2, 'xdata', [get(my_plot2, 'xdata') t_accum], 'ydata', [get(my_plot2, 'ydata') el_n]);
 end
 end

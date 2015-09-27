@@ -3,7 +3,7 @@ global enc_init x_cmd ei tp overall_time my_plot my_plot2;
 x_plot = 0;
 y_plot = 0;
 figure(2);
-my_plot = plot(0, 0, 0 ,0, 'b-');
+my_plot = plot(0 ,0, 'b-');
 figure(3);
 my_plot2 = plot(0, 0, 'b-');
  
