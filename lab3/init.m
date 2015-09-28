@@ -8,10 +8,10 @@ rs_n = struct('time', time, 'el', el, 'er',er, 'theta', 0, 'x', 0, 'y', 0);
 x_plot = 0;
 y_plot = 0;
 my_plot = plot(x_plot, y_plot, 'b-');
-
+%axis equal;
 %robot.encoders.NewMessageFcn = @encoderCallback;
 enc = rossubscriber('/enc', @encoderCallback);
 
 %robot.encoders.NewMessageFcn=@encoderCallback;
 %lh = event.listener(robot.encoders, 'OnMessageReceived', @encoderCallback);
-drive_in_Cornu;
+drive_robot;

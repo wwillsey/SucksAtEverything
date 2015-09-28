@@ -27,11 +27,11 @@ for j = 1:360
 
    end
 end
-pause(.005);
+%pause(.005);
 [tx,ty,tb]=irToXy(nearest_range(1), nearest_range(2));
 hold on;
-figure(1);
-plot(tx, ty, '*');
+%figure(1);
+plot(ty, tx, '*');
 pause(0.005);
 if nearest_range(2) < 1.5
     nearest_obj = [tx,ty,tb];

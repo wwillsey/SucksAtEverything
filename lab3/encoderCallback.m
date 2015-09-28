@@ -7,6 +7,7 @@ t_now = double(handle.LatestMessage.Header.Stamp.Nsec) / 1e9;
 el_n = double(handle.LatestMessage.Left)/1e3;
 er_n = double(handle.LatestMessage.Right)/1e3;
 dt = t_now - rs_p.time;
+if el_n ~= 0 && er_n ~= 0 &&  dt~=0
 if(dt < 0)
     dt = 1+t_now - rs_p.time;
 end
@@ -27,6 +28,6 @@ y_n = y_p + dy;
 rs_p = rs_n;
 rs_n = struct('time', t_now, 'el', el_n, 'er', er_n, 'theta', theta_n, 'x', x_n, 'y', y_n);
 set(my_plot, 'xdata', [get(my_plot, 'xdata') x_n], 'ydata', [get(my_plot, 'ydata') y_n]);
-%pause(0.001);
+end
 end
 
