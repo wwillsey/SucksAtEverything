@@ -1,9 +1,9 @@
 function u = PID( handle, event, dt, goal_state, actual_state)
-global robot x_cmd ei tp enc_init error error_prev;
+global robot x_cmd ei tp enc_init error error_prev stop;
 %input parameter
 kp = 6;
-kd = 1.5;
-ki = 0.1;
+kd = 1.2;
+ki = 0.7;
 u = 0;
 current_enc = double(handle.LatestMessage.Left) / 1e3;
 el_n = current_enc - enc_init;
@@ -29,9 +29,10 @@ else
         u = -max;
     end
     
-    if error <= .001
+    if  abs(error) <= .005
         u = 0;
     end
+    
 end
 end
 

@@ -5,10 +5,10 @@ global enc_init my_plot2;
 
 % NOT the real thing
 current_enc = double(handle.LatestMessage.Left) / 1e3;
-el_n = current_enc - enc_init
-
-if(t_accum <= 12 && abs(el_n) < 2)
-    set(my_plot2, 'xdata', [get(my_plot2, 'xdata') t_accum], 'ydata', [get(my_plot2, 'ydata') el_n]);
-end
+el_n = current_enc - enc_init;
+% 
+% if(t_accum <= 12 && abs(el_n) < 2)
+%     set(my_plot2, 'xdata', [get(my_plot2, 'xdata') t_accum], 'ydata', [get(my_plot2, 'ydata') el_n]);
+% end
 end
 
