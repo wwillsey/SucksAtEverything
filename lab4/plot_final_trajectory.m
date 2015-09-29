@@ -6,12 +6,11 @@ global t_array s_array e_array d_array;
     s_array = [s_array, s];
     e_array = [e_array, el_n];
     d_array = [d_array, el_n - s];
-    el_n - s
     if(t_accum < 10)
         figure(2);
         plot(t_array, s_array, t_array, e_array, 'b-');
-%         figure(3); 
-%         plot(t_array, d_array, 'b-');
+         figure(3); 
+         plot(t_array, d_array, 'b-');
     end
 end
 

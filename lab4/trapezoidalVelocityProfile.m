@@ -11,6 +11,6 @@ elseif t_ramp < t && t < tf - t_ramp && t > 0
     uref = vmax;
 else
     uref = 0;
-    uref = sgn*uref;
 end
+uref = sgn*uref;
 
