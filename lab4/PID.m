@@ -1,7 +1,7 @@
 function u = PID( handle, event, dt, goal_state, actual_state)
 global robot x_cmd ei tp enc_init error error_prev stop;
 %input parameter
-kp = 1;
+kp = .5;
 kd = 0.3;
 ki = 0.01;
 u = 0;
