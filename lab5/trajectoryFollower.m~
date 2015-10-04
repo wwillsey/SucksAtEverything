@@ -1,0 +1,31 @@
+classdef trajectoryFollower
+    %TRAJECTORY Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties
+        feedforward;
+        controller;
+        reference
+    end
+    
+    methods
+        function obj = trajectoryFollower(feedforward_control, reference_traj, controller)
+            obj.feedforward = feedforward_control;
+            obj.reference = reference
+            obj.controller = controller;
+        end
+        function [vl, vr] = feedfoward_velocity(obj, time)
+            [V, w] = obj.feedfoward_controller.computeControl(time);
+            [vl, vr] = robotModel.VwTovlvr(V, w);
+        end
+        function [vl, vr] = feedback_velocity(obj, time)
+            [V, w] = obj.controller.feedback(obj.feedfoward
+        end
+        function [vl, vr] = getVelocity(obj, time)
+            [vl, vr] = obj.feedfoward_velocity(time);
+            
+        end
+    end
+    
+end
+

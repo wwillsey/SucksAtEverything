@@ -8,13 +8,11 @@ classdef controller
     end
     
     methods
-        function obj = controller()
-        end
-        function init_state(obj, el, er) 
+        function obj = controller(el, er)
             obj.robot_pose = [0 0 0];
             obj.robot_state = struct('el', el, 'er', er, 'theta', 0);
         end
-        function update_pose(obj, el_n, er_n, dt)
+        function update_pose(obj, dt, el_n, er_n)
             del = el_n - obj.robot_state.el;
             der = er_n - obj.robot_state.er;
             vl_n = del / dt;
@@ -29,16 +27,16 @@ classdef controller
             x_n = x_p + dx;
             y_n = y_p + dy;
             obj.robot_state = struct('el', el_n, 'er', er, 'theta', theta_n);
-            obj.robot_pose = [x_n, y_n, theta_n];
+            
         end
-        function [V, w] = feedback(obj, traj_ref, t)
+        function [V, w] = getVel(traj, actual_pose, t)
             kpx = .5;
             kpy = .5;
             
-            goal_pose = traj_ref.getPoseAtTime(t);
+            goal_pose = traj.getPoseAtTime(t);
             goal_position = goal_pose(1:2)';
-            actual_position = obj.robot_pose(1:2)';
-            theta = obj.robot_pose(3);
+            actual_position = actual_pose(1:2)';
+            theta = actual_pose(3);
             error_world = goal_position - actual_position;
             error = [cos(theta), -sin(theta); sin(theta), cos(theta)]^-1 * error_world;
             adjust = [kpx, 0; 0, kpy] * error;
