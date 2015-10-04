@@ -4,7 +4,7 @@ function [ output_args ] = encoder_callback( handle, event )
 global robot;
 global rtrajectory trajectory_follower fcontrol fbackcontrol;
 global t_accum tp;
-use_feedback = false;
+use_feedback = true;
 el_n = double(handle.LatestMessage.Left)/1e3;
 er_n = double(handle.LatestMessage.Right)/1e3;
 if isempty(tp) || tp == -1

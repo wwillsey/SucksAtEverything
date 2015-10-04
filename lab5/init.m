@@ -8,4 +8,5 @@ rtrajectory = robotTrajectory(fcontrol, 0, 15, [0,0,0]);
 fbackcontrol = controller();
 trajectory_follower = trajectoryFollower(fcontrol, rtrajectory, fbackcontrol);
 
-lh = event.listener(robot.encoders, 'OnMessageReceived', @encoder_callback);
+%lh = event.listener(robot.encoders, 'OnMessageReceived', @encoder_callback);
+enc = rossubscriber('/enc', @encoder_callback);

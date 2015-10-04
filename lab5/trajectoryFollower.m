@@ -15,7 +15,7 @@ classdef trajectoryFollower
             obj.controller = controller;
         end
         function [vl, vr] = feedfoward_velocity(obj, time)
-            [V, w] = obj.feedfoward_controller.computeControl(time);
+            [V, w] = obj.feedforward.computeControl(time);
             [vl, vr] = robotModel.VwTovlvr(V, w);
         end
         function [vl, vr] = feedback_velocity(obj, time)
@@ -23,8 +23,11 @@ classdef trajectoryFollower
             [vl, vr] = robotModel.VwTovlvr(V, w);
         end
         function [vl, vr] = getVelocity(obj, time, use_feedback)
+            if(use_feedback)
+                [vl_feedback, vr_feedback] = obj.feedback_velocity(time);
+            end
             [vl_forward, vr_forward] = obj.feedfoward_velocity(time);
-            [vl_feedback, vr_feedback] = obj.feedback_velocity(time);
+            
             if(use_feedback)
                 vl = vl_forward + vl_feedback;
                 vr = vr_forward + vr_feedback;

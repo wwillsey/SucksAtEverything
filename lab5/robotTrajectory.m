@@ -9,7 +9,7 @@ classdef robotTrajectory
     
     methods
         function obj = robotTrajectory(ref, time_start, time_end, init_pose)
-            dt = 0.01
+            dt = 0.01;
             x = init_pose(1);
             y = init_pose(2);
             theta = init_pose(3);
@@ -29,9 +29,9 @@ classdef robotTrajectory
             end
         end
         function pose = getPoseAtTime(obj, t)
-            all_x = obj.trajectory(1,:);
-            all_y = obj.trajectory(2,:);
-            all_theta = obj.trajectory(3,:);
+            all_x = obj.trajectory(:,1);
+            all_y = obj.trajectory(:,2);
+            all_theta = obj.trajectory(:,3);
             x_q = interp1(obj.times, all_x, t);
             y_q = interp1(obj.times, all_y, t);
             theta_q = interp1(obj.times, all_theta, t);
