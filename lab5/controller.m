@@ -1,11 +1,11 @@
 classdef controller < handle
     %UNTITLED2 Summary of this class goes here
     %   Detailed explanation goes here
-    
+   
     properties
         robot_pose;
         robot_state;
-        
+        error;
     end
     
     methods
@@ -14,6 +14,7 @@ classdef controller < handle
         function ret = init_state(obj, el, er) 
             obj.robot_pose = [0 0 0];
             obj.robot_state = struct('el', el, 'er', er, 'theta', 0);
+            obj.error = [0;0];
             ret = true;
         end
         function update_pose(obj, el_n, er_n, dt)
@@ -40,8 +41,8 @@ classdef controller < handle
             end
         end
         function [V, w] = feedback(obj, traj_ref, t)
-            kpx = 0.2;
-            kpy = 0.6;
+            kpx = 1;
+            kpy = 5;
            
             goal_pose = traj_ref.getPoseAtTime(t-0.2);
             goal_position = goal_pose(1:2)';
@@ -49,6 +50,7 @@ classdef controller < handle
             theta = obj.robot_pose(3);
             error_world = goal_position - actual_position;
             error = [cos(theta), -sin(theta); sin(theta), cos(theta)]^-1 * error_world;
+            obj.error = error;
             adjust = [kpx, 0; 0, kpy] * error;
             V = adjust(1);
             w = adjust(2);

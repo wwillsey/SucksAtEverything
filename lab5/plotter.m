@@ -29,8 +29,8 @@ classdef plotter < handle
             obj.all_y = [obj.all_y, y];
             obj.all_x1 = [obj.all_x1, x1];
             obj.all_y1 = [obj.all_y1, y1];
-            %figure(obj.h);
-            set(obj.h, {'XData'}, num2cell([obj.all_x;obj.all_x1],2), {'YData'}, num2cell([obj.all_y, obj.all_y2],2));
+            %obj.h;
+            set(obj.h, {'XData'}, num2cell([obj.all_x;obj.all_x1],2), {'YData'}, num2cell([obj.all_y; obj.all_y1],2));
             %drawnow;
             %plot(obj.all_x, obj.all_y,'r-', obj.all_x1, obj.all_y1, 'b-');
         end 

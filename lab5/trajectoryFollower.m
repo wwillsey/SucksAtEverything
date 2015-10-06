@@ -23,9 +23,9 @@ classdef trajectoryFollower
             [vl, vr] = robotModel.VwTovlvr(V, w);
         end
         function [vl, vr] = getVelocity(obj, time, use_feedback)
-            if(use_feedback)
-                [vl_feedback, vr_feedback] = obj.feedback_velocity(time)
-            end
+      
+            [vl_feedback, vr_feedback] = obj.feedback_velocity(time);
+            
             [vl_forward, vr_forward] = obj.feedfoward_velocity(time);
             
             if(use_feedback)
