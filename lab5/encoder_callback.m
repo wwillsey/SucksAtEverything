@@ -4,6 +4,7 @@ function [ output_args ] = encoder_callback( handle, event )
 global robot;
 global rtrajectory trajectory_follower fcontrol fbackcontrol;
 global t_accum tp;
+global plot1 plot2;
 use_feedback = true;
 el_n = double(handle.LatestMessage.Left)/1e3;
 er_n = double(handle.LatestMessage.Right)/1e3;
@@ -21,6 +22,11 @@ else
     fbackcontrol.update_pose(el_n, er_n, dt);
     [vl, vr] = trajectory_follower.getVelocity(t_accum, use_feedback);
     robot.sendVelocity(vl, vr);
+    currentPose = fbackcontrol.robot_pose;
+    referencePose = rtrajectory.getPoseAtTime(t_accum);
+    plot1.update_plot(currentPose(1), currentPose(2), referencePose(1), referencePose(2));
+    plot2.update_plot(t_accum, currentPose(1) - referencePose(1), t_accum, currentPose(2) - referencePose(2));
+    %plot2.update_plot(t_accum, el_n, t_accum, er_n);
 end
 
 end

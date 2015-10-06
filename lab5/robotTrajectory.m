@@ -9,7 +9,7 @@ classdef robotTrajectory
     
     methods
         function obj = robotTrajectory(ref, time_start, time_end, init_pose)
-            dt = 0.01;
+            dt = 0.005;
             x = init_pose(1);
             y = init_pose(2);
             theta = init_pose(3);

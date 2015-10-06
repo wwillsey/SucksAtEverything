@@ -5,6 +5,7 @@ classdef controller < handle
     properties
         robot_pose;
         robot_state;
+        
     end
     
     methods
@@ -17,31 +18,32 @@ classdef controller < handle
         end
         function update_pose(obj, el_n, er_n, dt)
             if el_n ~= 0 && er_n ~= 0 &&  dt~=0
-            del = el_n - obj.robot_state.el;
-            der = er_n - obj.robot_state.er;
-            vl_n = del / dt;
-            vr_n = der / dt;
-            [V, w] = robotModel.vlvrToVw(vl_n, vr_n);
-            theta_p = obj.robot_state.theta;
-            theta_n = theta_p + w * dt;
-            dx = cos(double(theta_n)) * V * dt;
-            dy = sin(double(theta_n)) * V * dt;
-            x_p = obj.robot_pose(1);
-            y_p = obj.robot_pose(2);
-            x_n = x_p + dx;
-            y_n = y_p + dy;
-           % obj.robot_state = struct('el', el_n, 'er', er_n, 'theta', theta_n);
-            obj.robot_state.el = el_n;
-            obj.robot_state.er = er_n;
-            obj.robot_state.theta = theta_n;
-            obj.robot_pose = [x_n, y_n, theta_n];
+                del = el_n - obj.robot_state.el;
+                der = er_n - obj.robot_state.er;
+                vl_n = del / dt;
+                vr_n = der / dt;
+                [V, w] = robotModel.vlvrToVw(vl_n, vr_n);
+                theta_p = obj.robot_state.theta;
+                theta_n = theta_p + w * dt / 2;
+                dx = cos(double(theta_n)) * V * dt;
+                dy = sin(double(theta_n)) * V * dt;
+                x_p = obj.robot_pose(1);
+                y_p = obj.robot_pose(2);
+                x_n = x_p + dx;
+                y_n = y_p + dy;
+                theta_n = theta_n + w * dt / 2;
+               % obj.robot_state = struct('el', el_n, 'er', er_n, 'theta', theta_n);
+                obj.robot_state.el = el_n;
+                obj.robot_state.er = er_n;
+                obj.robot_state.theta = theta_n;
+                obj.robot_pose = [x_n, y_n, theta_n];
             end
         end
         function [V, w] = feedback(obj, traj_ref, t)
-            kpx = 1;
-            kpy = 1;
-            
-            goal_pose = traj_ref.getPoseAtTime(t);
+            kpx = 0.2;
+            kpy = 0.6;
+           
+            goal_pose = traj_ref.getPoseAtTime(t-0.2);
             goal_position = goal_pose(1:2)';
             actual_position = obj.robot_pose(1:2)';
             theta = obj.robot_pose(3);
@@ -50,6 +52,9 @@ classdef controller < handle
             adjust = [kpx, 0; 0, kpy] * error;
             V = adjust(1);
             w = adjust(2);
+        end
+        function plotting(obj, x,y, x1, y1)
+            obj.plot.update_plot(x,y, x1, y1);
         end
     end
     
