@@ -268,9 +268,9 @@ classdef cubicSpiral < handle
                 sin_accum = sin_accum + sin(theta_s) * ds;
                 y_s = obj.poseArray(2,1) + sin_accum;
                 
-                obj.poseArray(:,i) = [x_s;y_s;theta_s];
-                obj.distArray(i) = sqrt(x_s^2 + y_s^2);
-                obj.curvArray(i) = k_s;
+                obj.poseArray(:,i+1) = [x_s;y_s;theta_s];
+                obj.distArray(i+1) = sqrt(x_s^2 + y_s^2);
+                obj.curvArray(i+1) = k_s;
             end
             i = obj.numSamples;
             s = (i-1)*ds;  
