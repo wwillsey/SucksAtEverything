@@ -5,7 +5,7 @@ global robot;
 global rtrajectory trajectory_follower fcontrol fbackcontrol;
 global t_accum tp;
 global plot2 plot3 plot4;
-use_feedback = false;
+use_feedback = true;
 el_n = double(handle.LatestMessage.Left)/1e3;
 er_n = double(handle.LatestMessage.Right)/1e3;
 if t_accum < 18

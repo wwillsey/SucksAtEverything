@@ -41,8 +41,8 @@ classdef controller < handle
             end
         end
         function [V, w] = feedback(obj, traj_ref, t)
-            kpx = 1;
-            kpy = 5;
+            kpx = 2;
+            kpy = 6;
            
             goal_pose = traj_ref.getPoseAtTime(t-0.2);
             goal_position = goal_pose(1:2)';
