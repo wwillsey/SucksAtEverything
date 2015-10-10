@@ -89,6 +89,16 @@ classdef cubicSpiral < handle
                     % Compute the curve. Break out of this loop, and then 
                     % immediately continue to next iteration of the for b loop 
                     % if tmax is exceeded in absolute value at any time.
+                        s = i*ds;
+                        ks =s*(a+b*s)*(s-sMax);
+                        t = t + ks*ds;
+                        if(t > tMax)
+                            broke = true;
+                            break;
+                        end
+                        x = x + cos(t)*ds;
+                        y = y + sin(t)*ds;
+                        r = r + ks^2*ds;
                     end
                     if(broke == true); continue; end;
 
@@ -159,7 +169,8 @@ classdef cubicSpiral < handle
             persistent a1T a2T b1T b2T r1T r2T;
                     
             if(isempty(inited))
-                load('cubicSpirals2mm_015rads','a1Tab','a2Tab','b1Tab','b2Tab','r1Tab','r2Tab');
+                %JIMMY CHANGED THIS!!!!
+                load('cubicSpirals','a1Tab','a2Tab','b1Tab','b2Tab','r1Tab','r2Tab');
                 inited = true;
                 a1T = a1Tab;a2T = a2Tab;b1T = b1Tab;b2T = b2Tab;r1T = r1Tab;r2T = r2Tab;
             end
@@ -455,7 +466,7 @@ classdef cubicSpiral < handle
         end
         
         function V  = getVAtTime(obj,t)
-            if( t < obj.timeArray(1))
+            if( t < obj.timeArray(1) || t > obj.timeArray(end))
                 V = 0.0;
             else
                 V  = interp1(obj.timeArray,obj.VArray,t,'pchip','extrap');  
@@ -463,7 +474,7 @@ classdef cubicSpiral < handle
         end
             
         function w  = getwAtTime(obj,t)
-            if(t < obj.timeArray(1))
+            if(t < obj.timeArray(1) || t > obj.timeArray(end))
                 w = 0.0;
             else
                 w  = interp1(obj.timeArray,obj.wArray,t,'pchip','extrap');  
@@ -471,10 +482,14 @@ classdef cubicSpiral < handle
         end
             
         function pose  = getPoseAtTime(obj,t)
-            x = interp1(obj.timeArray,obj.poseArray(1,:),t,'pchip','extrap');
-            y = interp1(obj.timeArray,obj.poseArray(2,:),t,'pchip','extrap');
-            th = interp1(obj.timeArray,obj.poseArray(3,:),t,'pchip','extrap');
-            pose  = [x ; y ; th];  
+            if (t > obj.timeArray(end))
+                pose = obj.poseArray(:,end);
+            else
+                x = interp1(obj.timeArray,obj.poseArray(1,:),t,'pchip','extrap');
+                y = interp1(obj.timeArray,obj.poseArray(2,:),t,'pchip','extrap');
+                th = interp1(obj.timeArray,obj.poseArray(3,:),t,'pchip','extrap');
+                pose  = [x ; y ; th];  
+            end
         end  
         
         function parms  = getParms(obj)
