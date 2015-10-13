@@ -4,15 +4,14 @@ function  encoder_callback( handle, event )
 global robot;
 global robot_trajectory1 robot_trajectory2 robot_trajectory3 trajectory_follower fbackcontrol;
 global t_accum tp running;
-global feed_back_plot error_plot;
 global terminate current;
 global  feed_back_plot1 feed_back_plot2 feed_back_plot3;
-use_feedback = true;
+use_feedback = false;
 
 %reading raw data
 el_n = double(handle.LatestMessage.Left)/1e3;
 er_n = double(handle.LatestMessage.Right)/1e3;
-
+disp('test');
 if ~terminate
     if isempty(tp) || tp == -1
         %Initialize the first iteration
@@ -33,11 +32,11 @@ if ~terminate
             currentPose = fbackcontrol.robot_pose;
             referencePose = trajectory_follower.robot_trajectory.getPoseAtTime(t_accum);
             if(current == 1)
-                feed_back_plot1.update_plot(currentPose(1), currentPose(2), referencePose(1), referencePose(2));
+                %feed_back_plot1.update_plot(currentPose(1), currentPose(2), referencePose(1), referencePose(2));
             elseif current == 2
-                feed_back_plot2.update_plot(currentPose(1), currentPose(2), referencePose(1), referencePose(2));
+                %feed_back_plot2.update_plot(currentPose(1), currentPose(2), referencePose(1), referencePose(2));
             elseif current == 3
-                feed_back_plot3.update_plot(currentPose(1), currentPose(2), referencePose(1), referencePose(2));
+                %feed_back_plot3.update_plot(currentPose(1), currentPose(2), referencePose(1), referencePose(2));
             end
             %error_plot.update_plot(t_accum, fbackcontrol.error(1), t_accum, fbackcontrol.error(2));
         end

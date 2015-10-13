@@ -42,9 +42,9 @@ classdef controller < handle
         end
         function [V, w] = feedback(obj, robot_trajectory, t)
             kpx = 2;
-            kpy = 6;
+            kpy = 2;
            
-            goal_pose = robot_trajectory.getPoseAtTime(t-0.2);
+            goal_pose = robot_trajectory.getPoseAtTime(t-0);
             goal_position = goal_pose(1:2);
             actual_position = obj.robot_pose(1:2)';
             theta = obj.robot_pose(3);

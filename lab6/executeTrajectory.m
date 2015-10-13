@@ -15,14 +15,14 @@ if(running)
     robot.sendVelocity(vl, vr);
 else
     robot.sendVelocity(0,0);
-    if(toc > 5)
+    if(toc > 15)
         running = true;
         global_reset;
     end
 end
 if(trajectory_follower.finished)
 %     disp('finished');
-%     fbackcontrol = controller();
+%    fbackcontrol = controller();
     if(current == 1)
         trajectory_follower = trajectoryFollower(robot_trajectory2, fbackcontrol);
         current = 2;
