@@ -45,7 +45,7 @@ classdef controller < handle
             kpy = 6;
            
             goal_pose = robot_trajectory.getPoseAtTime(t-0.2);
-            goal_position = goal_pose(1:2)';
+            goal_position = goal_pose(1:2);
             actual_position = obj.robot_pose(1:2)';
             theta = obj.robot_pose(3);
             error_world = goal_position - actual_position;

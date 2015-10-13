@@ -3,7 +3,6 @@ classdef cubicSpiral < handle
     % coefficients that adjust the terminal pose of the robot. The initial
     % pose is assumed to be the origin with zero curvature. The terminal
     % curvature is forced to be zero.
-    
     properties(Constant)
 
     end
@@ -234,7 +233,7 @@ classdef cubicSpiral < handle
                 as = -as;  
                 ss = -ss;
             end
-            curve = cubicSpiral([as bs ss],201);
+            curve = cubicSpiral([as bs ss],401);
         end
             
     end
@@ -278,9 +277,10 @@ classdef cubicSpiral < handle
                 
                 sin_accum = sin_accum + sin(theta_s) * ds;
                 y_s = obj.poseArray(2,1) + sin_accum;
-                
+                dx = x_s - obj.poseArray(1,i);
+                dy = y_s - obj.poseArray(2,i);
                 obj.poseArray(:,i+1) = [x_s;y_s;theta_s];
-                obj.distArray(i+1) = sqrt(x_s^2 + y_s^2);
+                obj.distArray(i+1) = obj.distArray(i) + sqrt(dx^2 + dy^2);
                 obj.curvArray(i+1) = k_s;
             end
             i = obj.numSamples;
@@ -447,8 +447,8 @@ classdef cubicSpiral < handle
         end
             
         function pose  = getPoseAtDist(obj,s)
-            x = interp1(obj.distArray,obj.poseArray(1,:),s,'pchip','extrap');
-            y = interp1(obj.distArray,obj.poseArray(2,:),s,'pchip','extrap');
+            x = interp1(obj.distArray,obj.poseArray(1,:),s,'pchip','extrap')
+            y = interp1(obj.distArray,obj.poseArray(2,:),s,'pchip','extrap')
             th = interp1(obj.distArray,obj.poseArray(3,:),s,'pchip','extrap');
             pose  = [x ; y ; th];  
         end
@@ -488,7 +488,7 @@ classdef cubicSpiral < handle
                 x = interp1(obj.timeArray,obj.poseArray(1,:),t,'pchip','extrap');
                 y = interp1(obj.timeArray,obj.poseArray(2,:),t,'pchip','extrap');
                 th = interp1(obj.timeArray,obj.poseArray(3,:),t,'pchip','extrap');
-                pose  = [x ; y ; th];  
+                pose  = [x ; y ; th];
             end
         end  
         

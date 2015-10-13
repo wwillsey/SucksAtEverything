@@ -6,7 +6,7 @@ global robot_trajectory1 robot_trajectory2 robot_trajectory3 fbackcontrol;
 global trajectory_follower;
 global t_accum tp running;
 global terminate;
-persistent current;
+global current;
 if isempty(current)
     current = 1;
 end
@@ -15,7 +15,6 @@ if(running)
     robot.sendVelocity(vl, vr);
 else
     robot.sendVelocity(0,0);
-    
     if(toc > 5)
         running = true;
         global_reset;
@@ -23,6 +22,7 @@ else
 end
 if(trajectory_follower.finished)
 %     disp('finished');
+%     fbackcontrol = controller();
     if(current == 1)
         trajectory_follower = trajectoryFollower(robot_trajectory2, fbackcontrol);
         current = 2;
