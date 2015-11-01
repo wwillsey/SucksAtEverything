@@ -22,11 +22,13 @@ modelPts = [x1pts ; y1pts ; w1pts];
 %dx = -0.05*rand();
 %dy = -0.05*rand();
 %dt = -0.05+0.2*rand();
-dx = 0;
+dx = .04;
 dy = 0;
 dt = 0;
-thePose = pose(0.0+dx,0.0+dy,0.0+dt);
+thePose = pose(0+dx,0+dy,0.0+dt);
 
 l = lineMapLocalizer(lines_p1, lines_p2, .01, .001, .0005);
-[errPlus0,J] = l.getJacobian(thePose,modelPts)
+[success, newpose] = l.refinePose(thePose, modelPts,500)
+
+newpose.getPoseVec
 

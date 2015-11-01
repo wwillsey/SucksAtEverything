@@ -90,7 +90,6 @@ classdef robotModel < handle
             %create homogeneous points
             bodyPts = [bx ; by ; ones(1,size(bx,2))];
         end
-        
     end
     
     methods(Access = private)

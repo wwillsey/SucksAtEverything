@@ -72,6 +72,25 @@ classdef rangeImage < handle
             axis([-1,1,-1,1]);
             axis square;
         end
+         function plotXvsY_world(obj, robotPose, maxRange)
+            x_new = [];
+            y_new = [];
+            count = 0;
+            for i = 1:obj.numPix
+                if(sqrt(obj.xArray(i)^2 + obj.yArray(i)^2) <= maxRange)
+                    x_new = [x_new obj.xArray(i)];
+                    y_new = [y_new obj.yArray(i)];
+                    count = count+1;
+                end
+            end
+            pts = [x_new;y_new; ones(1, count)];
+            world_pts = robotModel.senToWorld(robotPose) * pts;
+            x_data = world_pts(1,:);
+            y_data = world_pts(2,:);
+            plot(-y_data, x_data, '*');
+            axis([-1,1,-1,1]);
+            axis square;
+        end
         function [x, y, th] = irToXy( i, r )
         % irToXy finds position and bearing of a range pixel endpoint
         % Finds the position and bearing of the endpoint of a range pixel

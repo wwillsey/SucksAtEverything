@@ -4,7 +4,7 @@ classdef lineMapLocalizer < handle
  % the map.
 
  properties(Constant)
-    maxErr = 0.05; % 5 cm
+    maxErr = 0.10; % 5 cm
     minPts = 5; % min # of points that must match
  end
 
@@ -83,11 +83,24 @@ methods
         newPose = pose(poseIn.getPoseVec+dp);
         dth = (fitError(obj, newPose, modelPts) - errPlus0)/eps;
         J = [dx dy dth];
-        % Fill me in?
     end
- end
     
-    
-    
+    function [success, outPose] = refinePose(obj,thePose,ptsInModelFrame,maxIters)
+        err = 1000;
+        J = [10,10,10];
+        count = 0;
+        thePose = pose(robotModel.senToWorld(thePose));
+        ids = obj.throwOutliers(thePose, ptsInModelFrame);
+        ptsInModelFrame(:,ids) = [];
+        modelPts = ptsInModelFrame;
+        while err > 0.01 && norm(J) > 0.001 && count < maxIters
+            count = count + 1;
+            [err,J] = obj.getJacobian(thePose,modelPts);
+            thePose = pose(thePose.getPoseVec - .07*J');
+        end
+        success = (count < maxIters);
+        outPose = pose(robotModel.robToWorld(thePose));
+    end
+end 
 end
  
