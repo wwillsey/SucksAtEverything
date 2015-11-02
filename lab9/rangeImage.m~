@@ -90,7 +90,7 @@ classdef rangeImage < handle
             plot(-y_data, x_data, '*');
             axis([-1,1,-1,1]);
             axis square;
-            
+            set
         end
         function [x, y, th] = irToXy( i, r )
         % irToXy finds position and bearing of a range pixel endpoint
