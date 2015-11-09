@@ -15,7 +15,7 @@ classdef sRobot < handle
             if size(obj.robot_pose_odo, 1) == 0
                 obj.robot_pose_odo = obj.init_pose;
                 obj.robot_pose_fus = obj.init_pose;
-                obj.robot_state = struct('el', el_n, 'er', er_n, 'theta', 0);
+                obj.robot_state = struct('el', el_n, 'er', er_n, 'theta', obj.init_pose(3));
             else
                 if el_n ~= 0 && er_n ~= 0 &&  dt~=0
                     del = el_n - obj.robot_state.el;

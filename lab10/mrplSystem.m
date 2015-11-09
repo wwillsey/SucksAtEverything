@@ -21,7 +21,7 @@ classdef mrplSystem < handle
             obj.estRobot = sRobot(init_pose);
             obj.refRobot = [];
             obj.map = lineMapLocalizer(lines_p1, lines_p2, .01, .001, .0005);
-            obj.trajectoryFollower = trajectoryFollower(init_pose);
+            obj.trajectoryFollower = trajectoryFollower();
             obj.use_feedback = use_feedback;
             obj.t_accum = 0;
             obj.t_traj = 0;
@@ -32,7 +32,7 @@ classdef mrplSystem < handle
             obj.estRobot.update_pose(el_n, er_n, dt);
             obj.t_accum = obj.t_accum + dt;
             obj.t_traj = obj.t_traj + dt;
-            if obj.trajectoryFollower.finished == true
+            if obj.trajectoryFollower.finished == true && obj.count >= 2
                 obj.terminated = true;
             end
             

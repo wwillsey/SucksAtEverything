@@ -17,7 +17,8 @@ if ~system.terminated
     if isempty(tp) || tp == -1
         %Initialize the first iteration
         tp = double(handle.LatestMessage.Header.Stamp.Nsec) / 1e9;
-        system.update(el_n, er_n, 0)
+        system.update(el_n, er_n, 0);
+        disp('hi');
     else
         %% updating times and real time poses
         t_now = double(handle.LatestMessage.Header.Stamp.Nsec) / 1e9;
@@ -45,22 +46,32 @@ if ~system.terminated
         end
          
         %% execute the movements
-%         if(system.trajectoryFollower.finished == true)
-%             if(stop_timer < 0)
-%                 stop_timer = system.t_accum;
-%                 running = false;
-%             elseif(system.t_accum - stop_timer > 5)
-%                 running = true;
-%                 stop_timer = -1;
-%                 system.t_traj = 0;
-%                 if(system.count == 0)
-%                     system.trajectoryFollower.loadTrajectory(robot_trajectory2, system.trajectoryFollower.robot_trajectory.getPoseAtTime(system.t_accum));
-%                 elseif (system.count == 1)
-%                     system.trajectoryFollower.loadTrajectory(robot_trajectory3, system.trajectoryFollower.robot_trajectory.getPoseAtTime(system.t_accum));
-%                 end
-%                 system.count = system.count + 1;
-%             end
-%         end
+        if(system.trajectoryFollower.finished == true)
+            if(stop_timer < 0)
+                stop_timer = system.t_accum;
+                running = false;
+            elseif(system.t_accum - stop_timer > 10)
+                running = true;
+                stop_timer = -1;
+                system.t_traj = 0;
+                if(system.count == 0)
+                    cp = system.estRobot.robot_pose_fus
+                    h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
+                    fp = h^-1 * [0.75;0.25;1];
+                    robot_trajectory2 = cubicSpiral.planTrajectory(fp(1), fp(2), -cp(3), 1);
+                    robot_trajectory2.planVelocities(0.15);
+                    system.trajectoryFollower.loadTrajectory(robot_trajectory2, system.trajectoryFollower.robot_trajectory.getPoseAtTime(system.t_accum));
+                elseif (system.count == 1)
+                    cp = system.estRobot.robot_pose_fus
+                    h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
+                    fp = h^-1 * [0.5;0.5;1];
+                    robot_trajectory3 = cubicSpiral.planTrajectory(fp(1), fp(2), pi/2 - cp(3), 1);
+                    robot_trajectory3.planVelocities(0.15);
+                    system.trajectoryFollower.loadTrajectory(robot_trajectory3, system.trajectoryFollower.robot_trajectory.getPoseAtTime(system.t_accum));
+                end
+                system.count = system.count + 1;
+            end
+        end
         system.executeTrajectory();
     end
 else

@@ -8,6 +8,8 @@ global data_log
 global ran;
 global map;
 global robotPose;
+global laser_counter;
+global tp;
 close all;
 data_log = fopen('data_log', 'w');
 ran = false;
@@ -16,16 +18,16 @@ f2 = plot(0,0,0,0);
 xlabel('x');
 ylabel('y');
 feed_back_plot1 = plotter(f2);
-
+laser_counter = 0;
 current = 1;
 terminate = false;
-
+tp = -1;
 
 stop_timer = -1;
 running = true;
 
-robot_trajectory1 = cubicSpiral.planTrajectory(0.25, 0.75, pi/2, 1);
-robot_trajectory1.planVelocities(0.2);
+robot_trajectory1 = cubicSpiral.planTrajectory(0.25, 0.25, 0, 1);
+robot_trajectory1.planVelocities(0.15);
 p1 = [0;4];
 p2 = [0;0];
 p3 = [4;0];

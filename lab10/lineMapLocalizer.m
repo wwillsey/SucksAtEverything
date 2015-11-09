@@ -93,7 +93,7 @@ methods
         ids = obj.throwOutliers(thePose, ptsInModelFrame);
         ptsInModelFrame(:,ids) = [];
         modelPts = ptsInModelFrame;
-        while err > 0.0001 && norm(J) > 0.001 && count < maxIters
+        while err > 0.0005 && norm(J) > 0.001 && count < maxIters
             count = count + 1;
             [err,J] = obj.getJacobian(thePose,modelPts);
             if err < .001
