@@ -6,7 +6,7 @@ global tp;
 global terminated current running;
 global feed_back_plot1;
 global system;
-global robot_trajectory2 robot_trajectory3;
+global robot_trajectory1 robot_trajectory2 robot_trajectory3;
 global stop_timer;
 global data_log;
 
@@ -60,14 +60,14 @@ if ~system.terminated
                     fp = h^-1 * [0.75;0.25;1];
                     robot_trajectory2 = cubicSpiral.planTrajectory(fp(1), fp(2), -cp(3), 1);
                     robot_trajectory2.planVelocities(0.15);
-                    system.trajectoryFollower.loadTrajectory(robot_trajectory2, system.trajectoryFollower.robot_trajectory.getPoseAtTime(system.t_accum));
+                    system.trajectoryFollower.loadTrajectory(robot_trajectory2, cp);
                 elseif (system.count == 1)
                     cp = system.estRobot.robot_pose_fus
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
                     fp = h^-1 * [0.5;0.5;1];
                     robot_trajectory3 = cubicSpiral.planTrajectory(fp(1), fp(2), pi/2 - cp(3), 1);
                     robot_trajectory3.planVelocities(0.15);
-                    system.trajectoryFollower.loadTrajectory(robot_trajectory3, system.trajectoryFollower.robot_trajectory.getPoseAtTime(system.t_accum));
+                    system.trajectoryFollower.loadTrajectory(robot_trajectory3, cp);
                 end
                 system.count = system.count + 1;
             end

@@ -22,7 +22,7 @@ classdef trajectoryFollower < handle
             obj.robot_trajectory = trajectory;
             obj.finished = false;
             obj.startPose = pose(startPose(1), startPose(2), startPose(3));
-            obj.T = obj.T * obj.startPose.bToA();
+            obj.T = obj.startPose.bToA();
         end
         
         function [V, w] = feedfoward_velocity(obj, time)
@@ -42,7 +42,7 @@ classdef trajectoryFollower < handle
         end
         
         function [vl, vr] = getVelocity(obj, estRobot, time, use_feedback)
-            if(time >= obj.robot_trajectory.timeArray(end)+1 || obj.finished)
+            if(time >= obj.robot_trajectory.timeArray(end)+4 || obj.finished)
                 obj.finished = true;
                 vl = 0;
                 vr = 0;
