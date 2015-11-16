@@ -3,7 +3,7 @@ classdef rangeImage < handle
     %   Detailed explanation goes here
     
     properties (Constant)
-        maxUsefulRange = 2.0;
+        maxUsefulRange = 1.5;
         minUsefulRange = 0.05;
         maxRangeForTarget = 1.0;
     end
@@ -69,7 +69,7 @@ classdef rangeImage < handle
                 end
             end
             plot(-y_new, x_new, '*');
-            axis([-1,1,-1,1]);
+            axis([-2,2,-2,2]);
             axis square;
         end
          function plotXvsY_world(obj, robotPose, maxRange)

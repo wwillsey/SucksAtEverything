@@ -16,8 +16,8 @@ classdef controller < handle
         
         function [V, w] = linear_feedback(obj, refPose, estPose)
             %robot_trajectory act as refrobot
-            kpx = 0.05;
-            kpy = 0.9;
+            kpx = 0.06;
+            kpy = 0.6;
             goal_position = refPose(1:2);
             actual_position = estPose(1:2)';
             theta = estPose(3);

@@ -1,6 +1,7 @@
 classdef object_finder < handle
       methods(Static)
-        function [midpt, th, best] = find_all_lines(rImage, err, num, ro)
+          
+        function [midpt, th, best] = find_all_lines(rImage, err, num) %, ro)
             i = 1;
             finished = false;
             midpt = [];
@@ -10,9 +11,9 @@ classdef object_finder < handle
             th_array = rImage.tArray;
             while(~finished)
                 current_t = th_array(i);
-                if(abs(ro - current_t) >= pi/4 && 360 - abs(ro-current_t) >= pi / 4)
-                    continue
-                end
+%                 if(abs(ro - current_t) >= pi/4 && 360 - abs(ro-current_t) >= pi / 4)
+%                     continue
+%                 end
                 [erre, nume, the] = rImage.findLineCandiate(i, 15);
                 if erre < err && nume >= num
                     midpt = [midpt, i];
@@ -96,5 +97,69 @@ classdef object_finder < handle
                 end
             end
         end
+        
+        function pt = find_line_ht(x_array, y_array, th_array, num)
+            image_mat = uint8(zeros(4/0.01, 4/0.01));
+%             x_array = rImage.xArray;
+%             y_array = rImage.yArray;
+%             num = rImage.numPix;
+            best = [];
+            for i = 1:num
+                x = x_array(i)*100;
+                x = round(x + 200);
+                y = y_array(i)*100;
+                y = round(200+y);
+                image_mat(y, x) = 1;
+            end
+            [H, theta, rho] = hough(image_mat);
+            P = houghpeaks(H, 5, 'threshold', 0.1*max(H(:)), 'NHoodSize', [21,21]);
+
+            for i = 1:size(P, 1)
+                cr = rho(P(i, 1));
+                ct = deg2rad(theta(P(i,2)));
+                temp = [];
+                for j= 1:num
+                    x = x_array(j)*100;
+                    x = round(x + 200);
+                    y = y_array(j)*100;
+                    y = round(200+y);
+                    guess = x * cos(ct) + y * sin(ct);
+                    if(abs(guess - cr) <= 5)
+                        temp = [temp; x_array(j),y_array(j), th_array(j)];
+                    end
+                end
+                
+                inliers = size(temp, 1);
+                [v,max_coord] = max(temp(:, 1));
+                [v,min_coord] = min(temp(:, 1));
+                p1 = temp(max_coord, :);
+                p2 = temp(min_coord, :);
+                dist = (p1(1) - p2(1))^2 + (p1(2) - p2(2))^2;
+                if(dist < 400 && inliers <= 30)
+                    if(inliers >= size(best, 1))
+                        best = temp;
+                    end
+                end
+            end
+            start = size(best,1);
+            last = 1;
+            for i = 1:(size(best, 1)-1)
+                if(abs(best(i+1, 3) - best(i,3)) >= pi/2)
+                    start = i;
+                    last = i+1;
+                    break;
+                end
+            end
+            p_left = best(start, :);
+            p_right = best(last, :);
+            x_left = p_left(1);
+            y_left = p_left(2);
+            x_right = p_right(1);
+            y_right = p_right(2);
+            x_avg = (x_left + x_right) / 2;
+            y_avg = (y_left + y_right) / 2;
+            th = atan2(x_right - x_left,-y_right + y_left);
+            pt = [x_avg, y_avg, th];
+        end        
       end
 end

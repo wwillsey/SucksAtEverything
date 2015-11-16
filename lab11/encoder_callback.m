@@ -30,48 +30,40 @@ if ~system.terminated
         system.update(el_n, er_n, dt);
       
         %% Plotting for debugging 
-        if(running)
-            currentPose = system.estRobot.robot_pose_fus;
-            referencePose = system.trajectoryFollower.robot_trajectory.getPoseAtTime(system.t_traj);
-            referencePose(3) = 1;
-            refPose = system.trajectoryFollower.T * referencePose;
-            refPose(1) = refPose(1) / refPose(3);
-            refPose(2) = refPose(2) / refPose(3);
-            formatSpec = 'time: %f  x: %f  y: %f refX: %f refY: %f \n';
-            fprintf(data_log, formatSpec, system.t_accum, refPose(1), refPose(2), referencePose(1), referencePose(2));
-            if(current == 1)
-                feed_back_plot1.update_plot(currentPose(1), currentPose(2), refPose(1), refPose(2));
-                
-            end
-        end
-         
-        %% execute the movements
-%         if(system.trajectoryFollower.finished == true)
-%             if(stop_timer < 0)
-%                 stop_timer = system.t_accum;
-%                 running = false;
-%             elseif(system.t_accum - stop_timer > 10)
-%                 running = true;
-%                 stop_timer = -1;
-%                 system.t_traj = 0;
-%                 if(system.count == 0)
-%                     cp = system.estRobot.robot_pose_fus
-%                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
-%                     fp = h^-1 * [0.75;0.25;1];
-%                     robot_trajectory2 = cubicSpiral.planTrajectory(fp(1), fp(2), -cp(3), 1);
-%                     robot_trajectory2.planVelocities(0.15);
-%                     system.trajectoryFollower.loadTrajectory(robot_trajectory2, cp);
-%                 elseif (system.count == 1)
-%                     cp = system.estRobot.robot_pose_fus
-%                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
-%                     fp = h^-1 * [0.5;0.5;1];
-%                     robot_trajectory3 = cubicSpiral.planTrajectory(fp(1), fp(2), pi/2 - cp(3), 1);
-%                     robot_trajectory3.planVelocities(0.15);
-%                     system.trajectoryFollower.loadTrajectory(robot_trajectory3, cp);
-%                 end
-%                 system.count = system.count + 1;
+%         if(running)
+%             currentPose = system.estRobot.robot_pose_fus;
+%             referencePose = system.trajectoryFollower.robot_trajectory.getPoseAtTime(system.t_traj);
+%             referencePose(3) = 1;
+%             refPose = system.trajectoryFollower.T * referencePose;
+%             refPose(1) = refPose(1) / refPose(3);
+%             refPose(2) = refPose(2) / refPose(3);
+%             formatSpec = 'time: %f  x: %f  y: %f refX: %f refY: %f \n';
+%             fprintf(data_log, formatSpec, system.t_accum, refPose(1), refPose(2), referencePose(1), referencePose(2));
+%             if(current == 1)
+%                 feed_back_plot1.update_plot(currentPose(1), currentPose(2), refPose(1), refPose(2));
+%                 
 %             end
 %         end
+         
+        %% execute the movements
+        if(system.trajectoryFollower.finished == true)
+            if(stop_timer < 0)
+                stop_timer = system.t_accum;
+                running = false;
+            elseif(system.t_accum - stop_timer > 10)
+                running = true;
+                stop_timer = -1;
+                if(system.count == 0)
+                    cp = system.estRobot.robot_pose_fus
+                    h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
+                    fp = h^-1 * [0.75;0.25;1];
+                    robot_trajectory2 = trapezoidaStepReferenceControl(0.25, 0.25, -0.15);
+                    system.trajectoryFollower.loadTrajectory(robot_trajectory2, cp);
+                end
+                system.t_traj = 0;
+                system.count = system.count + 1;
+            end
+        end
         system.executeTrajectory();
     end
 else
