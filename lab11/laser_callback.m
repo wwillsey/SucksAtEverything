@@ -26,7 +26,7 @@ if(use_localization)
     end
 end
 %% Filter out wall points
-if(system.terminated)
+if(system.terminated && system.count == 0)
     x = rImage_dense.xArray;
     y = rImage_dense.yArray;
     all_th = rImage_dense.tArray;
@@ -53,7 +53,7 @@ if(system.terminated)
         x = pts(1);
         y = pts(2);
         th = pts(3);
-        T_og = [1,0,-17/100; 0,1,0;0,0,1];
+        T_og = [1,0,-18/100; 0,1,0;0,0,1];
         T_so = [cos(th), -sin(th), x; sin(th), cos(th), y; 0,0,1];
         T_rs = [1,0,-9/100;0,1,0;0,0,1];
         T_final = T_rs*T_so*T_og;

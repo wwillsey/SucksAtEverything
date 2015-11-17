@@ -8,6 +8,7 @@ classdef trajectoryFollower < handle
         finished;
         startPose;
         T;
+        init_theta;
     end
     
     methods
@@ -22,6 +23,7 @@ classdef trajectoryFollower < handle
             obj.robot_trajectory = trajectory;
             obj.finished = false;
             obj.startPose = pose(startPose(1), startPose(2), startPose(3));
+            obj.init_theta = startPose(3);
             obj.T = obj.startPose.bToA();
         end
         
@@ -33,13 +35,18 @@ classdef trajectoryFollower < handle
         function [V, w] = feedback_velocity(obj, estRobot, time)
             time_delay = 0.01;
             raw_refPose = obj.robot_trajectory.getPoseAtTime(time-time_delay);
+            temp_th = raw_refPose(3);
             raw_refPose(3) = 1;
             refPose = obj.T * raw_refPose;
             refPose(1) = refPose(1) / refPose(3);
             refPose(2) = refPose(2) / refPose(3);
             estPose = estRobot.robot_pose_fus;
+            
+            th = atan2(sin(temp_th+obj.init_theta), cos(temp_th+obj.init_theta));
+            refPose(3) = th
             [V, w] = obj.controller.linear_feedback(refPose, estPose);
         end
+        
         
         function [vl, vr] = getVelocity(obj, estRobot, time, use_feedback)
             if(time >= obj.robot_trajectory.timeArray(end)+4 || obj.finished)

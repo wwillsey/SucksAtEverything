@@ -1,11 +1,12 @@
-classdef trapezoidaStepReferenceControl
+classdef turnReference
     %UNTITLED Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
         amax;
         vmax;
-        dist;
+        wmax;
+        rad;
         t_ramp;
         poseArray;
         timeArray;
@@ -13,12 +14,12 @@ classdef trapezoidaStepReferenceControl
     end
     
     methods
-        function obj = trapezoidaStepReferenceControl(amax, vmax, dist, initPose)
-           obj.amax = amax;
+        function obj = turnReference(vmax, rad, initPose)
            obj.vmax = vmax;
-           obj.dist = dist;
-           obj.t_ramp = vmax / amax;
-           obj.tf = (abs(dist) + vmax^2 / amax) / vmax;   
+           [V, w] = robotModel.vlvrToVw(vmax, -vmax);
+           obj.wmax  = abs(w);
+           obj.rad = rad;
+           obj.tf = abs(rad) / abs(obj.wmax);   
            obj.timeArray = zeros(1, floor(obj.tf/0.005));
            obj.poseArray = zeros(3, floor(obj.tf/0.005));
            % integrate
@@ -44,18 +45,9 @@ classdef trapezoidaStepReferenceControl
         
         function [V, w] = computeControl(obj, timenow)
             t = timenow;
-            uref = 0;
-            if t < obj.t_ramp && t > 0
-                uref = obj.amax*t;
-            elseif (obj.tf-t) < obj.t_ramp && obj.tf-t > 0 && t > 0
-                uref = obj.amax * (obj.tf - t);
-            elseif obj.t_ramp < t && t < obj.tf - obj.t_ramp && t > 0
-                uref = obj.vmax;
-            else
-                uref = 0;
-            end
-            uref = sign(obj.dist) * uref;
-            [V, w] = robotModel.vlvrToVw(uref, uref); 
+            uref = obj.vmax;
+            uref = sign(obj.rad) * uref;
+            [V, w] = robotModel.vlvrToVw(-uref, uref); 
         end
         
         function v = getVAtTime(obj, t)
@@ -83,4 +75,3 @@ classdef trapezoidaStepReferenceControl
     end
     
 end
-
