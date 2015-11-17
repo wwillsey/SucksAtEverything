@@ -22,7 +22,8 @@ classdef controller < handle
             goal_position = refPose(1:2);
             actual_position = estPose(1:2)';
             theta = estPose(3);
-            etheta = refPose(3) - theta;
+            etheta = atan2(sin(refPose(3) - theta), cos(refPose(3) - theta));
+
             error_world = goal_position - actual_position;
             error = [cos(theta), -sin(theta); sin(theta), cos(theta)]^-1 * error_world;
              if(abs(error(1)) < 0.02)

@@ -43,13 +43,13 @@ classdef trajectoryFollower < handle
             estPose = estRobot.robot_pose_fus;
             
             th = atan2(sin(temp_th+obj.init_theta), cos(temp_th+obj.init_theta));
-            refPose(3) = th
+            refPose(3) = th;
             [V, w] = obj.controller.linear_feedback(refPose, estPose);
         end
         
         
         function [vl, vr] = getVelocity(obj, estRobot, time, use_feedback)
-            if(time >= obj.robot_trajectory.timeArray(end)+4 || obj.finished)
+            if(time >= obj.robot_trajectory.timeArray(end) || obj.finished)
                 obj.finished = true;
                 vl = 0;
                 vr = 0;

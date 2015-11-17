@@ -9,11 +9,12 @@ global system;
 global robot_trajectory1 robot_trajectory2 robot_trajectory3;
 global stop_timer;
 global data_log;
+global waiting acquiring;
 
 %reading raw data
 el_n = double(handle.LatestMessage.Left)/1e3;
 er_n = double(handle.LatestMessage.Right)/1e3;
-if ~system.terminated
+if ~system.terminated && ~acquiring
     if isempty(tp) || tp == -1
         %Initialize the first iteration
         tp = double(handle.LatestMessage.Header.Stamp.Nsec) / 1e9;
@@ -46,32 +47,48 @@ if ~system.terminated
 %         end
          
         %% execute the movements
-        if(system.trajectoryFollower.finished == true)
+        if(system.trajectoryFollower.finished == true )
+            if(~waiting)
             if(stop_timer < 0)
                 stop_timer = system.t_accum;
                 running = false;
+  
             elseif(system.t_accum - stop_timer > 0.2)
                 running = true;
                 stop_timer = -1;
                 if(system.count == 0)
-                    cp = system.estRobot.robot_pose_fus
+                    cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
                     fp = h^-1 * [0.75;0.25;1];
-                    robot_trajectory2 = trapezoidaStepReferenceControl(0.3, 0.2, -0.15, [0,0,0]);
+                    robot_trajectory2 = trapezoidaStepReferenceControl(0.25, 0.15, -0.15, [0,0,0]);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory2, cp);
                 elseif(system.count == 1)
-                    cp = system.estRobot.robot_pose_fus
+                    cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
                     fp = h^-1 * [0.75;0.25;1];
                     
-                    robot_trajectory3 = turnReference(0.1, -pi, [0,0,0]);
+                    robot_trajectory3 = turnReference(0.15, -pi, [0,0,0]);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory3, cp);
+                    system.count = -2;
+                    waiting = true;
+                    stop_timer = system.t_accum;
                 end
                 system.t_traj = 0;
                 system.count = system.count + 1;
             end
+            else
+                if(system.t_accum - stop_timer > 15)
+                    system.count = 0;
+                    system.terminated = true;
+                    stop_timer = -1;
+                    waiting = false;
+                    acquiring = true;
+                end
+            end
         end
-        system.executeTrajectory();
+        if(~acquiring)
+            system.executeTrajectory();
+        end
     end
 else
     robot.sendVelocity(0,0);

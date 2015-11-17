@@ -10,7 +10,10 @@ global map;
 global robotPose;
 global laser_counter use_localization;
 global tp;
+global waiting acquiring;
 
+waiting = false;
+acquiring = false;
 close all;
 
 data_log = fopen('data_log', 'w');

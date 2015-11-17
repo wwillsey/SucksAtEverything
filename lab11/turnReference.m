@@ -16,7 +16,7 @@ classdef turnReference
     methods
         function obj = turnReference(vmax, rad, initPose)
            obj.vmax = vmax;
-           [V, w] = robotModel.vlvrToVw(vmax, -vmax);
+           [V, w] = robotModel.vlvrToVw(-vmax, vmax);
            obj.wmax  = abs(w);
            obj.rad = rad;
            obj.tf = abs(rad) / abs(obj.wmax);   

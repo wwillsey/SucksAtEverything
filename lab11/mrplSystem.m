@@ -32,7 +32,7 @@ classdef mrplSystem < handle
             obj.estRobot.update_pose(el_n, er_n, dt);
             obj.t_accum = obj.t_accum + dt;
             obj.t_traj = obj.t_traj + dt;
-            if obj.trajectoryFollower.finished == true && obj.count > 1
+            if obj.trajectoryFollower.finished == true && obj.count > 2
                 obj.terminated = true;
             end
             
@@ -40,10 +40,6 @@ classdef mrplSystem < handle
         function executeTrajectory(obj)
             [vl, vr] = obj.trajectoryFollower.getVelocity(obj.estRobot, obj.t_traj, obj.use_feedback);
             obj.robot.sendVelocity(vl, vr);
-        end
-        
-        function executeTrajectory_rel(obj)
-            
         end
         
         function rel_pose = absToRel(obj, abs_pose)

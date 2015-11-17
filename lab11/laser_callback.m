@@ -1,6 +1,6 @@
 function laser_callback( src, msg )
 
-global system laser_counter use_localization
+global system laser_counter use_localization acquiring
 % if(system.terminated && ~ran)
 %make the raw data into processable data
 if mod(laser_counter, 1) == 0
@@ -27,6 +27,7 @@ if(use_localization)
 end
 %% Filter out wall points
 if(system.terminated && system.count == 0)
+    acquiring = true;
     x = rImage_dense.xArray;
     y = rImage_dense.yArray;
     all_th = rImage_dense.tArray;
@@ -59,12 +60,13 @@ if(system.terminated && system.count == 0)
         T_final = T_rs*T_so*T_og;
         fx = T_final(1,3)
         fy = T_final(2,3)
-        if(abs(fx) >= 0.05 || abs(fy) >= 0.05)           
-            robot_trajectory = cubicSpiral.planTrajectory(T_final(1,3), T_final(2,3), th, 1);
-            robot_trajectory.planVelocities(0.2);
-            system.trajectoryFollower.loadTrajectory(robot_trajectory, system.estRobot.robot_pose_fus);
-            system.terminated = false;
-        end
+        robot_trajectory = cubicSpiral.planTrajectory(T_final(1,3), T_final(2,3), th, 1);
+        robot_trajectory.planVelocities(0.15);
+           % robot_trajectory = turnReference(0.1, pi, [0,0,0]);
+        system.trajectoryFollower.loadTrajectory(robot_trajectory, system.estRobot.robot_pose_fus);
+        system.t_traj = 0;
+        acquiring = false;
+        system.terminated = false;
     end
 end
 laser_counter = laser_counter + 1;
