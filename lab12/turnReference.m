@@ -11,15 +11,21 @@ classdef turnReference
         poseArray;
         timeArray;
         tf;
+        dist;
     end
     
     methods
-        function obj = turnReference(vmax, rad, initPose)
+        function obj = turnReference(vmax, amax, rad, initPose)
            obj.vmax = vmax;
            [V, w] = robotModel.vlvrToVw(-vmax, vmax);
            obj.wmax  = abs(w);
            obj.rad = rad;
-           obj.tf = abs(rad) / abs(obj.wmax);   
+           obj.amax = amax;
+           obj.vmax = vmax;
+           obj.dist = rad * robotModel.W / 2;
+           obj.t_ramp = vmax / amax;
+           
+           obj.tf = (abs(obj.dist) + vmax^2 / amax) / vmax; 
            obj.timeArray = zeros(1, floor(obj.tf/0.005));
            obj.poseArray = zeros(3, floor(obj.tf/0.005));
            % integrate
@@ -31,7 +37,7 @@ classdef turnReference
             index = 1;
             for t = 0:dt:obj.tf
                 [V, w] = obj.computeControl(t);
-                theta = theta + w*dt;
+                theta = mod(theta + w*dt + pi, 2 * pi) - pi;
                 dx = cos(theta) * V*dt;
                 dy = sin(theta) * V*dt;
                 x = x+dx;
@@ -45,7 +51,16 @@ classdef turnReference
         
         function [V, w] = computeControl(obj, timenow)
             t = timenow;
-            uref = obj.vmax;
+            uref = 0;
+            if t < obj.t_ramp && t > 0
+                uref = obj.amax*t;
+            elseif (obj.tf-t) < obj.t_ramp && obj.tf-t > 0 && t > 0
+                uref = obj.amax * (obj.tf - t);
+            elseif obj.t_ramp < t && t < obj.tf - obj.t_ramp && t > 0
+                uref = obj.vmax;
+            else
+                uref = 0;
+            end
             uref = sign(obj.rad) * uref;
             [V, w] = robotModel.vlvrToVw(-uref, uref); 
         end
