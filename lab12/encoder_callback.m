@@ -10,8 +10,8 @@ global system;
 %this shit needs to go LOL
 global robot_trajectory1 robot_trajectory2 robot_trajectory3;
 global stop_timer;
-global data_log;
 global waiting acquiring;
+global acq_q drop_q;
 
 %reading raw data
 el_n = double(handle.LatestMessage.Left)/1e3;
@@ -63,17 +63,47 @@ if ~system.terminated && ~acquiring
                 running = true;
                 stop_timer = -1;
                 if(system.count == 0)
+                    disp('acquiring');
+                    acquiring = true;
+                elseif(system.count == 1)
+                    robot.forksUp()
+                    disp('go back');
                     cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
                     fp = h^-1 * [0.75;0.25;1];
                     robot_trajectory2 = trapezoidaStepReferenceControl(0.25, 0.15, -0.15, [0,0,0]);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory2, cp);
-                elseif(system.count == 1)
+                elseif(system.count == 2)
+                    disp('rotate');
+                    cp = system.estRobot.robot_pose_fus;
+                    h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
+                    robot_trajectory3 = turnReference(0.1, pi, [0,0,0]);
+                    system.trajectoryFollower.loadTrajectory(robot_trajectory3, cp);
+                elseif(system.count == 3)
+                    disp('go to drop off');
+                    cp = system.estRobot.robot_pose_fus;
+                    h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
+                    current_drop = drop_q(1, :);
+                    current_drop(3) = 1;
+                    fp = h^-1 * current_drop';
+                    drop_q = drop_q(2:end, :);
+                    robot_trajectory1 = cubicSpiral.planTrajectory(fp(1), fp(2), -pi/2-cp(3), 1);
+                    robot_trajectory1.planVelocities(0.15);
+                    system.trajectoryFollower.loadTrajectory(robot_trajectory1, cp);
+                elseif(system.count == 4)
+                    robot.forksDown()
+                    disp('go back');
                     cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
                     fp = h^-1 * [0.75;0.25;1];
-                    
-                    robot_trajectory3 = turnReference(0.15, -pi, [0,0,0]);
+                    robot_trajectory2 = trapezoidaStepReferenceControl(0.25, 0.15, -0.15, [0,0,0]);
+                    system.trajectoryFollower.loadTrajectory(robot_trajectory2, cp);
+                elseif(system.count == 5)
+                    disp('rotate');
+                    cp = system.estRobot.robot_pose_fus;
+                    h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
+                    fp = h^-1 * [0.75;0.25;1];
+                    robot_trajectory3 = turnReference(0.1, -pi, [0,0,0]);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory3, cp);
                     system.count = -2;
                     waiting = true;
@@ -83,12 +113,12 @@ if ~system.terminated && ~acquiring
                 system.count = system.count + 1;
             end
             else
-                if(system.t_accum - stop_timer > 15)
-                    system.count = 0;
+                if(system.t_accum - stop_timer > 5)
+                    system.count = 6;
                     system.terminated = true;
                     stop_timer = -1;
                     waiting = false;
-                    acquiring = true;
+                    acquiring = false;
                 end
             end
         end
@@ -97,6 +127,22 @@ if ~system.terminated && ~acquiring
         end
     end
 else
+    if(size(acq_q ,1 ) > 0 && acquiring == false)
+       disp('i m a retard');
+        cp = system.estRobot.robot_pose_fus;
+        h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
+        acq_current = acq_q(1, :);
+        acq_current(3) = 1;
+        fp = h^-1 * acq_current';
+        acq_q = acq_q(2:end, :);
+        robot_trajectory1 = cubicSpiral.planTrajectory(fp(1), fp(2), pi/2-cp(3), 1);
+        robot_trajectory1.planVelocities(0.15);
+        system.trajectoryFollower.loadTrajectory(robot_trajectory1, cp);
+        system.t_traj = 0;
+        acquiring = false;
+        system.terminated = false;
+        system.count = 0;
+    end
     robot.sendVelocity(0,0);
 end
 

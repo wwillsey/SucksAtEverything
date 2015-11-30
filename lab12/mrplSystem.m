@@ -32,7 +32,7 @@ classdef mrplSystem < handle
             obj.estRobot.update_pose(el_n, er_n, dt);
             obj.t_accum = obj.t_accum + dt;
             obj.t_traj = obj.t_traj + dt;
-            if obj.trajectoryFollower.finished == true && obj.count > 2
+            if obj.trajectoryFollower.finished == true && obj.count > 5
                 obj.terminated = true;
             end
             

@@ -32,11 +32,14 @@ classdef sRobot < handle
                     x_n = x_p + dx;
                     y_n = y_p + dy;
                     theta_n = theta_n + w * dt / 2;
+                    theta_n = mod(theta_n + pi, 2*pi) - pi; 
                     obj.robot_state.el = el_n;
                     obj.robot_state.er = er_n;
                     obj.robot_state.theta = theta_n;
                     obj.robot_pose_odo = obj.robot_pose_odo + [dx, dy, w*dt];
                     obj.robot_pose_fus = obj.robot_pose_fus + [dx, dy, w*dt];
+                    obj.robot_pose_odo(3) = theta_n;
+                    obj.robot_pose_fus(3) = theta_n;
                 end
             end
          end
