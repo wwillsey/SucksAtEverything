@@ -26,6 +26,10 @@ if(use_localization)
     end
 end
 %% Filter out wall points
+% i think we can use this same/similar weird way of setting up new
+% trajectories but we should only use this after we get to acquisition pose
+% then use this to get the pickup pose. I guess we use the encoder callback
+% to create trajectories to the acquisition pose. not sure
 if(system.terminated && system.count == 0)
     acquiring = true;
     x = rImage_dense.xArray;
@@ -38,6 +42,7 @@ if(system.terminated && system.count == 0)
         po = pts(:, i);
         robot_pts = T_rs * po;
         abspose = system.relToAbs(robot_pts);
+        % CHANGE this cuz map is different. 
         if(abs(abspose(1)) >= 0.1 && abs(abspose(2)) >= 0.1)
             nonwallpts = [nonwallpts, po];
             nonwallth = [nonwallth, all_th(i)];
@@ -47,6 +52,8 @@ if(system.terminated && system.count == 0)
     nonwally = nonwallpts(2, :);
     nonwallnum = size(nonwallpts, 2);
     %% Find the line
+    % do we need to change the linefinder cuz theres 3 walls now? idk if
+    % there is
     pts = object_finder.find_line_ht(nonwallx, nonwally, nonwallth, nonwallnum);
     if(size(pts) == 0)
         disp('NO LINE FOUND');

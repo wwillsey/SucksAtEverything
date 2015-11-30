@@ -6,6 +6,8 @@ global tp;
 global terminated current running;
 global feed_back_plot1;
 global system;
+
+%this shit needs to go LOL
 global robot_trajectory1 robot_trajectory2 robot_trajectory3;
 global stop_timer;
 global data_log;
@@ -47,6 +49,10 @@ if ~system.terminated && ~acquiring
 %         end
          
         %% execute the movements
+        % i guess we can use the system.count to keep track of if we are
+        % going to acquisition, pickup, or dropoff spot prolly easiest. we
+        % might want like a global pose so we know where to go for the
+        % acquisition shit
         if(system.trajectoryFollower.finished == true )
             if(~waiting)
             if(stop_timer < 0)
