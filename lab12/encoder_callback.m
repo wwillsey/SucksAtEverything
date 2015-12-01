@@ -12,7 +12,8 @@ global robot_trajectory1 robot_trajectory2 robot_trajectory3;
 global stop_timer;
 global waiting acquiring;
 global acq_q drop_q;
-
+global use_localization;
+global rotate_first;
 %reading raw data
 el_n = double(handle.LatestMessage.Left)/1e3;
 er_n = double(handle.LatestMessage.Right)/1e3;
@@ -53,7 +54,7 @@ if ~system.terminated && ~acquiring
         % going to acquisition, pickup, or dropoff spot prolly easiest. we
         % might want like a global pose so we know where to go for the
         % acquisition shit
-        if(system.trajectoryFollower.finished == true )
+        if(system.trajectoryFollower.finished == true && rotate_first == false )
             if(~waiting)
             if(stop_timer < 0)
                 stop_timer = system.t_accum;
@@ -75,11 +76,13 @@ if ~system.terminated && ~acquiring
                     system.trajectoryFollower.loadTrajectory(robot_trajectory2, cp);
                 elseif(system.count == 2)
                     disp('rotate');
+                    use_localization = false;
                     cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
-                    robot_trajectory3 = turnReference(0.1, pi, [0,0,0]);
+                    robot_trajectory3 = turnReference(0.1, 0.12, pi, [0,0,0]);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory3, cp);
                 elseif(system.count == 3)
+                    use_localization = true;
                     disp('go to drop off');
                     cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
@@ -87,7 +90,7 @@ if ~system.terminated && ~acquiring
                     current_drop(3) = 1;
                     fp = h^-1 * current_drop';
                     drop_q = drop_q(2:end, :);
-                    robot_trajectory1 = cubicSpiral.planTrajectory(fp(1), fp(2), -pi/2-cp(3), 1);
+                    robot_trajectory1 = cubicSpiral.planTrajectory(fp(1), fp(2), -pi/2-cp(3)+.1*(3-size(acq_q,1)), 1);
                     robot_trajectory1.planVelocities(0.15);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory1, cp);
                 elseif(system.count == 4)
@@ -96,14 +99,15 @@ if ~system.terminated && ~acquiring
                     cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
                     fp = h^-1 * [0.75;0.25;1];
-                    robot_trajectory2 = trapezoidaStepReferenceControl(0.25, 0.15, -0.15, [0,0,0]);
+                    robot_trajectory2 = trapezoidaStepReferenceControl(0.25, 0.15, -0.1, [0,0,0]);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory2, cp);
                 elseif(system.count == 5)
                     disp('rotate');
+                    use_localization = false;
                     cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
                     fp = h^-1 * [0.75;0.25;1];
-                    robot_trajectory3 = turnReference(0.1, -pi, [0,0,0]);
+                    robot_trajectory3 = turnReference(0.10, 0.12, pi, [0,0,0]);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory3, cp);
                     system.count = -2;
                     waiting = true;
@@ -121,6 +125,10 @@ if ~system.terminated && ~acquiring
                     acquiring = false;
                 end
             end
+        elseif(system.trajectoryFollower.finished == true && rotate_first == true)
+            rotate_first = false;
+            system.terminated = true;
+            return;
         end
         if(~acquiring)
             system.executeTrajectory();
@@ -129,13 +137,14 @@ if ~system.terminated && ~acquiring
 else
     if(size(acq_q ,1 ) > 0 && acquiring == false)
        disp('i m a retard');
+        use_localization = true;
         cp = system.estRobot.robot_pose_fus;
         h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
         acq_current = acq_q(1, :);
         acq_current(3) = 1;
         fp = h^-1 * acq_current';
         acq_q = acq_q(2:end, :);
-        robot_trajectory1 = cubicSpiral.planTrajectory(fp(1), fp(2), pi/2-cp(3), 1);
+        robot_trajectory1 = cubicSpiral.planTrajectory(fp(1), fp(2), pi/2-cp(3)+.1*(3-size(acq_q,1)), 1);
         robot_trajectory1.planVelocities(0.15);
         system.trajectoryFollower.loadTrajectory(robot_trajectory1, cp);
         system.t_traj = 0;

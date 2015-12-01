@@ -12,11 +12,14 @@ global laser_counter use_localization;
 global tp;
 global waiting acquiring;
 global acq_q drop_q;
+global rotate_first;
 waiting = false;
 acquiring = false;
 close all;
-acq_q = [util.f2m(1) util.f2m(2) pi/2; util.f2m(2) util.f2m(2) pi/2; util.f2m(3) util.f2m(2) pi/2];
-drop_q = [util.f2m(1.75) util.f2m(1) -pi/2; util.f2m(2.25) util.f2m(1) -pi/2; util.f2m(2.75) util.f2m(1) -pi/2];
+acq_q = [util.f2m(0.9) util.f2m(2) pi/2; util.f2m(1.7) util.f2m(2) pi/2; util.f2m(2.7) util.f2m(2) pi/2];
+drop_q = [util.f2m(1.75) util.f2m(1) -pi/2; 
+    util.f2m(2.5) util.f2m(1.2) -pi/2;
+    util.f2m(3.25) util.f2m(1.5) -pi/2];
 data_log = fopen('data_log', 'w');
 ran = false;
 %% Plotting data and global variable init
@@ -44,7 +47,7 @@ lines_p1 = [p1 p2 p3];
 lines_p2 = [p2 p3 p4];
 
 %% Init system and guess a pose
-robotPose = [0.2286, 0.2286, pi/2];
+robotPose = [0.2286, 0.2286, -pi/2];
 system = mrplSystem(robot, lines_p1, lines_p2, robotPose, true);
 
 %% refine pose before robot starts
@@ -57,16 +60,12 @@ pts = [x;y;ones(1, rImage.numPix)];
 robot_init_pose = p_lid.getPoseVec';
 system.estRobot.init_pose = robot_init_pose;
 system.estRobot.robot_pose_fus = robot_init_pose;
-
+                  
 cp = robot_init_pose;
 h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
-acq_current = acq_q(1, :);
-acq_current(3) = 1;
-fp = h^-1 * acq_current';
-acq_q = acq_q(2:end, :);
-robot_trajectory1 = cubicSpiral.planTrajectory(fp(1), fp(2), pi/2-cp(3), 1);
-robot_trajectory1.planVelocities(0.15);
-system.trajectoryFollower.loadTrajectory(robot_trajectory1, robot_init_pose);
+robot_trajectory3 = turnReference(0.10, 0.12, pi, [0,0,0]);
+system.trajectoryFollower.loadTrajectory(robot_trajectory3, cp);
+rotate_first = true;
 system.t_traj = 0;
 acquiring = false;
 system.terminated = false;

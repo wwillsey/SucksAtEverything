@@ -3,37 +3,13 @@ function laser_callback( src, msg )
 global system laser_counter use_localization acquiring acquired
 % if(system.terminated && ~ran)
 %make the raw data into processable data
-if mod(laser_counter, 1) == 0
-tic;
 lidar_read = msg.Ranges;
-rImage_dense = rangeImage(lidar_read, 1, true);
-rImage_sparse = rangeImage(lidar_read, 5, true);
-x = rImage_sparse.xArray;
-y = rImage_sparse.yArray;
-all_th = rImage_sparse.tArray;
-pts = [x;y;ones(1, rImage_sparse.numPix)];
-
-T_rs = [1,0,-10/100;0,1,0;0,0,1];
-
-%% Updating the robot pose
-if(use_localization)
-    current_pose_fus = system.estRobot.robot_pose_fus;
-    [succ, p_lid] = system.map.refinePose(pose(current_pose_fus), pts, 200);
-    if succ
-        p_lid = p_lid.getPoseVec;
-        updated_pose_fus = current_pose_fus + (0.25)*(robotModel.pose_addition(p_lid, current_pose_fus, -1));
-        system.estRobot.robot_pose_fus = updated_pose_fus;
-    end
-end
-%% Filter out wall points
-% i think we can use this same/similar weird way of setting up new
-% trajectories but we should only use this after we get to acquisition pose
-% then use this to get the pickup pose. I guess we use the encoder callback
-% to create trajectories to the acquisition pose. not sure
 if(acquiring)
+    rImage_dense = rangeImage(lidar_read, 1, true);
     x = rImage_dense.xArray;
     y = rImage_dense.yArray;
     all_th = rImage_dense.tArray;
+    T_rs = [1,0,-10/100;0,1,0;0,0,1];
     pts = [x;y;ones(1, rImage_dense.numPix)];
     nonwallpts = [];
     nonwallth = [];
@@ -42,8 +18,8 @@ if(acquiring)
         robot_pts = T_rs * po;
         abspose = system.relToAbs(robot_pts);
         % CHANGE this cuz map is different. 
-        if(abs(abspose(1)) >= 0.05 && abs(abspose(2)) >= 0.05 && abs(abspose(1)) <= 4*12*2.54/100 - 0.05 ...
-                && abs(robot_pts(2)) < .20)
+        if(abs(abspose(1)) >= 0.05 && abs(abspose(2)) >= 0.05 && abs(abspose(1)) <= util.f2m(4) - 0.1 ...
+                && abs(robot_pts(2)) < .20 && robot_pts(1) > 0)
             nonwallpts = [nonwallpts, po];
             nonwallth = [nonwallth, all_th(i)];
         end
@@ -79,6 +55,32 @@ if(acquiring)
         system.terminated = false;
     end
 end
+if mod(laser_counter, 3) == 0
+tic;
+rImage_sparse = rangeImage(lidar_read, 10, true);
+x = rImage_sparse.xArray;
+y = rImage_sparse.yArray;
+all_th = rImage_sparse.tArray;
+pts = [x;y;ones(1, rImage_sparse.numPix)];
+
+
+
+%% Updating the robot pose
+if(use_localization)
+    current_pose_fus = system.estRobot.robot_pose_fus;
+    [succ, p_lid] = system.map.refinePose(pose(current_pose_fus), pts, 200);
+    if succ
+        p_lid = p_lid.getPoseVec;
+        updated_pose_fus = current_pose_fus + (0.5)*(robotModel.pose_addition(p_lid, current_pose_fus, -1));
+        system.estRobot.robot_pose_fus = updated_pose_fus;
+    end
+end
+%% Filter out wall points
+% i think we can use this same/similar weird way of setting up new
+% trajectories but we should only use this after we get to acquisition pose
+% then use this to get the pickup pose. I guess we use the encoder callback
+% to create trajectories to the acquisition pose. not sure
+
 laser_counter = laser_counter + 1;
 end
 
