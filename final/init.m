@@ -17,16 +17,22 @@ waiting = false;
 acquiring = false;
 close all;
 acq_q = [
-         util.f2m(1) util.f2m(4.5) pi/2; 
-         util.f2m(2) util.f2m(4.5) pi/2; 
-         util.f2m(3) util.f2m(4.5) pi/2;
-         util.f2m(4) util.f2m(4.5) pi/2
+         util.f2m(0.9) util.f2m(4.1) pi/2; 
+         util.f2m(1.7) util.f2m(4.1) pi/2; 
+         util.f2m(2.75) util.f2m(3.9) pi/2+0.1;
+         util.f2m(3.75) util.f2m(3.9) pi/2+0.2;
+         util.f2m(5.5) util.f2m(4) 0;
+         util.f2m(5.5) util.f2m(3) 0;
+         util.f2m(5.5) util.f2m(2) 0
          ];
      
-drop_q = [util.f2m(2.75) util.f2m(1.5) -pi/2; 
-          util.f2m(3.75) util.f2m(1.5) -pi/2;
-          util.f2m(4.75) util.f2m(1.5) -pi/2;
-          util.f2m(5.75) util.f2m(1.5) -pi/2;];
+drop_q = [util.f2m(1) util.f2m(1.5) -pi/2;
+          util.f2m(2) util.f2m(1.5) -pi/2;
+          util.f2m(3) util.f2m(2) -pi/2;
+          util.f2m(4) util.f2m(2) -pi/2;
+          util.f2m(4) util.f2m(2) -pi/2;
+          util.f2m(5) util.f2m(2) -pi/2;
+          util.f2m(7) util.f2m(2) -pi/2];
 data_log = fopen('data_log', 'w');
 ran = false;
 %% Plotting data and global variable init

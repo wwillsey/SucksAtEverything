@@ -72,12 +72,13 @@ pts = [x;y;ones(1, rImage_sparse.numPix)];
             [succ, p_lid] = system.map.refinePose(pose(current_pose_fus), pts, 200);
          if succ
             p_lid = p_lid.getPoseVec;
-            p_lid(3)
-            updated_pose_fus = current_pose_fus + (0.1)*(robotModel.pose_addition(p_lid, current_pose_fus, -1));
-            system.estRobot.robot_pose_fus = updated_pose_fus;
+            if(~isnan(p_lid(3)))
+                updated_pose_fus = current_pose_fus + (0.2)*(robotModel.pose_addition(p_lid, current_pose_fus, -1));
+                system.estRobot.robot_pose_fus = updated_pose_fus;
+            end
          end
          catch
-            disp('error')
+            disp('error');
         end
     end
 

@@ -3,7 +3,7 @@ classdef rangeImage < handle
     %   Detailed explanation goes here
     
     properties (Constant)
-        maxUsefulRange = 1.5;
+        maxUsefulRange = 3.0;
         minUsefulRange = 0.05;
         maxRangeForTarget = 1.0;
     end

@@ -79,11 +79,22 @@ if ~system.terminated && ~acquiring
                     disp('rotate');
                     use_localization = false;
                     cp = system.estRobot.robot_pose_fus;
-                    h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
                     robot_trajectory3 = turnReference(0.1, 0.12, pi, [0,0,0]);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory3, cp);
                 elseif(system.count == 3)
-                    use_localization = false;
+                  lidar_read = robot.laser.LatestMessage.Ranges;
+                  rImage = rangeImage(lidar_read, 5, true);
+                  x = rImage.xArray;
+                  y = rImage.yArray;
+                  pts = [x;y;ones(1, rImage.numPix)];
+                  [succ, p_lid] = system.map.refinePose(pose(system.estRobot.robot_pose_fus), pts, 200);
+                  if(succ)
+                    disp('strongly refine pose');
+                    robot_pose = p_lid.getPoseVec'
+                    system.estRobot.robot_pose_fus = robot_pose;
+                    system.estRobot.robot_pose_odo = robot_pose;
+                  end
+                    use_localization = true;
                     disp('go to drop off');
                     cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
@@ -98,8 +109,6 @@ if ~system.terminated && ~acquiring
                     robot.forksDown()
                     disp('go back');
                     cp = system.estRobot.robot_pose_fus;
-                    h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
-                    fp = h^-1 * [0.75;0.25;1];
                     robot_trajectory2 = trapezoidaStepReferenceControl(0.25, 0.15, -0.1, [0,0,0]);
                     system.trajectoryFollower.loadTrajectory(robot_trajectory2, cp);
                 elseif(system.count == 5)
@@ -107,7 +116,6 @@ if ~system.terminated && ~acquiring
                     use_localization = true;
                     cp = system.estRobot.robot_pose_fus;
                     h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
-                    fp = h^-1 * [0.75;0.25;1];
                   %  if size(acq_q,1) > 4
                   %      robot_trajectory3 = turnReference(0.10, 0.12, pi/2+.1, [0,0,0]);
                   %  else
@@ -142,10 +150,10 @@ if ~system.terminated && ~acquiring
 else
     if(size(acq_q ,1 ) > 0 && acquiring == false)
        disp('planing');
-        use_localization = true;
+       use_localization = true;
         
         lidar_read = robot.laser.LatestMessage.Ranges;
-        rImage = rangeImage(lidar_read, 10, true);
+        rImage = rangeImage(lidar_read, 5, true);
         x = rImage.xArray;
         y = rImage.yArray;
         pts = [x;y;ones(1, rImage.numPix)];
@@ -154,9 +162,8 @@ else
             disp('strongly refine pose');
             robot_pose = p_lid.getPoseVec'
             system.estRobot.robot_pose_fus = robot_pose;
+            system.estRobot.robot_pose_odo = robot_pose;
         end
-
-        
         cp = system.estRobot.robot_pose_fus;
         h = [cos(cp(3)) -sin(cp(3)) cp(1); sin(cp(3)) cos(cp(3)) cp(2); 0 0 1];
         acq_current = acq_q(1, :);
